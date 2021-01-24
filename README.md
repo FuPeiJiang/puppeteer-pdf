@@ -1,3 +1,5 @@
+first: `yarn install`
+
 singlePage: `singleFile.js`<br>
 many pages: `the_htmls-the_pdfs.js`<br>
 
