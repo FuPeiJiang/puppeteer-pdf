@@ -11,6 +11,8 @@ const forwardSlashDirname = __dirname.replace(/\\/g, '/')
 var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
 var arr = arr.sort(collator.compare) */
 
+//OR
+
 // only these, in this order
 var arr = ['complete', 'foobar', 0]
 
