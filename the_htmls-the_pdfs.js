@@ -14,7 +14,7 @@ var arr = arr.sort(collator.compare) */
 //OR
 
 // only these, in this order
-var arr = ['complete', 'foobar', 0]
+var nameOnlyArr = ['complete', 'foobar', 0]
 
 
 const startAt = ''
@@ -22,8 +22,8 @@ var unlocked = false;
 // Immediately-invoked Function Expressions https://flaviocopes.com/javascript-iife/
 // always put a semi-colon before these
 (async () => {
-    for (let i = 0, len = arr.length; i < len; i++) {
-        let filenameNoExt = arr[i]
+    for (let i = 0, len = nameOnlyArr.length; i < len; i++) {
+        let filenameNoExt = nameOnlyArr[i]
         await new Promise(async resolve => {
             let htmlPath = `${forwardSlashDirname}/${sourceFolder}/${filenameNoExt}.html`
             let pdfPath = `${forwardSlashDirname}/${saveFolder}/${filenameNoExt}.pdf`
