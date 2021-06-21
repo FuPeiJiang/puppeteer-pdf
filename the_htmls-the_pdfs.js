@@ -49,17 +49,25 @@ var unlocked = false;
                 waitUntil: 'networkidle0'
             })
 
+            // https://stackoverflow.com/questions/1145850/how-to-get-height-of-entire-document-with-javascript#1147768
+            const [documentWidth, documentHeight] = await page.evaluate(() => {
+                var body = document.body,
+                    html = document.documentElement
+                return [
+                    Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth),
+                    Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight),
+                ]
+            })
+
             // await page.evaluate(() => {
             // document.body.style=''
             // })
 
             // or a .pdf file
             await page.pdf({
-                format: 'Letter',
-                // format: 'A4',
+                width: documentWidth,
+                height: documentHeight,
                 scale: 1,
-                // scale: 1.85,
-                // scale: 2,
                 printBackground: true,
                 path: pdfPath,
             })
