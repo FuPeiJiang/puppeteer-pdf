@@ -26,13 +26,50 @@ const filenameNoExt='template';
         waitUntil: 'networkidle0'
     })
 
-    // https://stackoverflow.com/questions/1145850/how-to-get-height-of-entire-document-with-javascript#1147768
+    // https://stackoverflow.com/questions/1145850/how-to-get-height-of-entire-document-with-javascript#41181003
     const [documentWidth, documentHeight] = await page.evaluate(() => {
-        var body = document.body,
-            html = document.documentElement
+
+        function getPageWidth() {
+            var pageWidth = 0;
+
+            function findHighestNode(nodesList) {
+                for (var i = nodesList.length - 1; i >= 0; i--) {
+                    if (nodesList[i].scrollWidth && nodesList[i].clientWidth) {
+                        var elWidth = Math.max(nodesList[i].scrollWidth, nodesList[i].clientWidth);
+                        pageWidth = Math.max(elWidth, pageWidth);
+                    }
+                    if (nodesList[i].childNodes.length) findHighestNode(nodesList[i].childNodes);
+                }
+            }
+
+            findHighestNode(document.documentElement.childNodes);
+
+            // The entire page width is found
+            return pageWidth
+        }
+
+        function getPageHeight() {
+            var pageHeight = 0;
+
+            function findHighestNode(nodesList) {
+                for (var i = nodesList.length - 1; i >= 0; i--) {
+                    if (nodesList[i].scrollHeight && nodesList[i].clientHeight) {
+                        var elHeight = Math.max(nodesList[i].scrollHeight, nodesList[i].clientHeight);
+                        pageHeight = Math.max(elHeight, pageHeight);
+                    }
+                    if (nodesList[i].childNodes.length) findHighestNode(nodesList[i].childNodes);
+                }
+            }
+
+            findHighestNode(document.documentElement.childNodes);
+
+            // The entire page height is found
+            return pageHeight
+        }
+
         return [
-            Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth),
-            Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight),
+            getPageWidth(),
+            getPageHeight(),
         ]
     })
     // console.log(documentWidth, documentHeight)
