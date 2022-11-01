@@ -3,11 +3,10 @@ const puppeteer = require('puppeteer')
 
 const forwardSlashDirname = __dirname.replace(/\\/g, '/')
 
-const filenameNoExt='template';
+const filenameNoExt = 'template'
 
-// Immediately-invoked Function Expressions https://flaviocopes.com/javascript-iife/
-// always put a semi-colon before these
-(async () => {
+async function main() {
+
     let htmlPath = `${forwardSlashDirname}/${filenameNoExt}.html`
     let pdfPath = `${forwardSlashDirname}/${filenameNoExt}.pdf`
 
@@ -30,38 +29,38 @@ const filenameNoExt='template';
     const [documentWidth, documentHeight] = await page.evaluate(() => {
 
         function getPageWidth() {
-            var pageWidth = 0;
+            var pageWidth = 0
 
             function findHighestNode(nodesList) {
                 for (var i = nodesList.length - 1; i >= 0; i--) {
                     if (nodesList[i].scrollWidth && nodesList[i].clientWidth) {
-                        var elWidth = Math.max(nodesList[i].scrollWidth, nodesList[i].clientWidth);
-                        pageWidth = Math.max(elWidth, pageWidth);
+                        var elWidth = Math.max(nodesList[i].scrollWidth, nodesList[i].clientWidth)
+                        pageWidth = Math.max(elWidth, pageWidth)
                     }
-                    if (nodesList[i].childNodes.length) findHighestNode(nodesList[i].childNodes);
+                    if (nodesList[i].childNodes.length) findHighestNode(nodesList[i].childNodes)
                 }
             }
 
-            findHighestNode(document.documentElement.childNodes);
+            findHighestNode(document.documentElement.childNodes)
 
             // The entire page width is found
             return pageWidth
         }
 
         function getPageHeight() {
-            var pageHeight = 0;
+            var pageHeight = 0
 
             function findHighestNode(nodesList) {
                 for (var i = nodesList.length - 1; i >= 0; i--) {
                     if (nodesList[i].scrollHeight && nodesList[i].clientHeight) {
-                        var elHeight = Math.max(nodesList[i].scrollHeight, nodesList[i].clientHeight);
-                        pageHeight = Math.max(elHeight, pageHeight);
+                        var elHeight = Math.max(nodesList[i].scrollHeight, nodesList[i].clientHeight)
+                        pageHeight = Math.max(elHeight, pageHeight)
                     }
-                    if (nodesList[i].childNodes.length) findHighestNode(nodesList[i].childNodes);
+                    if (nodesList[i].childNodes.length) findHighestNode(nodesList[i].childNodes)
                 }
             }
 
-            findHighestNode(document.documentElement.childNodes);
+            findHighestNode(document.documentElement.childNodes)
 
             // The entire page height is found
             return pageHeight
@@ -72,11 +71,7 @@ const filenameNoExt='template';
             getPageHeight(),
         ]
     })
-    // console.log(documentWidth, documentHeight)
-
-    // await page.evaluate(() => {
-    // document.body.style=''
-    // })
+    console.log(documentWidth, documentHeight)
 
     // or a .pdf file
     await page.pdf({
@@ -98,6 +93,5 @@ const filenameNoExt='template';
     // close the browser
     await browser.close()
 
-})()
-
-
+}
+main()
