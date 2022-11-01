@@ -73,20 +73,23 @@ async function main() {
     })
     console.log(documentWidth, documentHeight)
 
-    // or a .pdf file
+    //orientation/pageSizeType is dependent on css, same thing is size:${}in ${}in
+    const styleText = `@page{margin:0;size:8.5in 11in;}`
+
+    console.log(styleText)
+    await page.evaluate(function (styleText) {
+
+        const style_el = document.createElement('style')
+        style_el.textContent = styleText
+        document.body.appendChild(style_el)
+
+    }, styleText)
+
+    console.log(documentWidth, documentHeight)
+
     await page.pdf({
-        // format: 'Letter',
-        // format: 'A4',
-        scale: 1,
-        //defaults to px I think
-        width: documentWidth,
-        height: documentHeight,
-        // width: '1079px',
-        // height: '130yy4px',
-        // height: '1303px',
-        // scale: 1.85,
-        // scale: 2,
         printBackground: true,
+        preferCSSPageSize: true,
         path: pdfPath,
     })
 
