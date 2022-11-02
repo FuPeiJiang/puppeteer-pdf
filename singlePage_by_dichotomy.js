@@ -73,28 +73,84 @@ async function main() {
     })
     console.log(documentWidth, documentHeight)
 
-    //orientation/pageSizeType is dependent on css, same thing is size:${}in ${}in
-    const styleText = `@page{margin:0;size:8.5in 11in;}`
+    let low = 0
+    let high = documentHeight*2/96
+    let mid = (high + low)/2
+    let lastGood
+    let buf
 
-    console.log(styleText)
-    await page.evaluate(function (styleText) {
+    const constantWidth = documentWidth/96
 
-        const style_el = document.createElement('style')
-        style_el.textContent = styleText
-        document.body.appendChild(style_el)
+    while (true) {
 
-    }, styleText)
+        //orientation/pageSizeType is dependent on css, same thing is size:${}in ${}in
+        const styleText = `@page{margin:0;size:${constantWidth}in ${mid}in;}`
 
-    console.log(documentWidth, documentHeight)
+        console.log(styleText)
+        await page.evaluate(function (styleText) {
 
-    await page.pdf({
-        printBackground: true,
-        preferCSSPageSize: true,
-        path: pdfPath,
-    })
+            const element = document.getElementById("remove-this-please")
+            if (element) {
+                element.remove()
+            }
+
+            const style_el = document.createElement('style')
+            style_el.textContent = styleText
+            style_el.id = "remove-this-please"
+            document.body.appendChild(style_el)
+
+        }, styleText)
+
+        console.log(documentWidth, documentHeight)
+
+        buf = await page.pdf({
+            printBackground: true,
+            preferCSSPageSize: true,
+        })
+
+        if (high === 0) {
+            break
+        }
+
+        const occurence_count = occurrences(buf, "/Page\n")
+        if (occurence_count > 1) {
+            if (low === mid) {
+                mid = lastGood
+                high = 0
+                continue
+            }
+            low = mid
+            mid = (high + low)/2
+            continue
+        } else {
+            if (high === mid) {
+                break
+            }
+            high = mid
+            lastGood = mid
+            if (mid < 5) {
+                mid=documentHeight/96
+                high = 0
+                continue
+            }
+            mid = (high + low)/2
+            continue
+        }
+
+    }
+    fs.writeFileSync(pdfPath, buf)
 
     // close the browser
     await browser.close()
 
 }
 main()
+
+function occurrences(str_, subStr) {
+    let occurence_count = 0
+    let pos = -subStr.length
+    while ((pos = str_.indexOf(subStr, pos + subStr.length)) > -1) {
+        occurence_count++
+    }
+    return occurence_count
+}
